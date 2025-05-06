@@ -1,0 +1,61 @@
+support,itemsets
+0.3888888888888889,frozenset({'Cappuccino'})
+0.3820861678004535,frozenset({'Latte'})
+0.2770219198790627,frozenset({'Dark chocolate'})
+0.20937263794406652,frozenset({'Espresso shot'})
+0.20030234315948603,frozenset({'Sugar Free Vanilla syrup'})
+0.1912320483749055,frozenset({'Carmel syrup'})
+0.1889644746787604,frozenset({'Chocolate syrup'})
+0.17157974300831444,frozenset({'Hazelnut syrup'})
+0.13567649281934996,frozenset({'Chocolate Croissant'})
+0.13340891912320485,frozenset({'Ginger Scone'})
+0.11602418745275889,frozenset({'Cranberry Scone'})
+0.11564625850340136,frozenset({'Almond Croissant'})
+0.11489040060468632,frozenset({'Jumbo Savory Scone'})
+0.11413454270597127,frozenset({'Croissant'})
+0.11300075585789872,"frozenset({'Sugar Free Vanilla syrup', 'Cappuccino'})"
+0.1126228269085412,frozenset({'Chocolate Chip Biscotti'})
+0.10959939531368103,frozenset({'Oatmeal Scone'})
+0.10959939531368103,"frozenset({'Chocolate syrup', 'Cappuccino'})"
+0.10884353741496598,"frozenset({'Latte', 'Sugar Free Vanilla syrup'})"
+0.10770975056689343,"frozenset({'Latte', 'Carmel syrup'})"
+0.10619803476946334,frozenset({'Ginger Biscotti'})
+0.1054421768707483,frozenset({'Hazelnut Biscotti'})
+0.10317460317460317,"frozenset({'Chocolate syrup', 'Latte'})"
+0.10279667422524566,"frozenset({'Carmel syrup', 'Cappuccino'})"
+0.10128495842781557,"frozenset({'Hazelnut syrup', 'Latte'})"
+0.09712773998488285,"frozenset({'Latte', 'Cappuccino'})"
+0.09561602418745276,"frozenset({'Dark chocolate', 'Cappuccino'})"
+0.09410430839002268,"frozenset({'Dark chocolate', 'Latte'})"
+0.09032501889644746,"frozenset({'Hazelnut syrup', 'Cappuccino'})"
+0.061224489795918366,"frozenset({'Dark chocolate', 'Espresso shot'})"
+0.061224489795918366,"frozenset({'Sugar Free Vanilla syrup', 'Espresso shot'})"
+0.06046863189720333,"frozenset({'Carmel syrup', 'Espresso shot'})"
+0.060090702947845805,"frozenset({'Dark chocolate', 'Chocolate Croissant'})"
+0.05971277399848828,"frozenset({'Ginger Scone', 'Cappuccino'})"
+0.05971277399848828,"frozenset({'Ginger Scone', 'Dark chocolate'})"
+0.05895691609977324,"frozenset({'Chocolate syrup', 'Espresso shot'})"
+0.05744520030234316,"frozenset({'Dark chocolate', 'Almond Croissant'})"
+0.057067271352985637,"frozenset({'Latte', 'Espresso shot'})"
+0.057067271352985637,"frozenset({'Croissant', 'Latte'})"
+0.0563114134542706,"frozenset({'Croissant', 'Cappuccino'})"
+0.0563114134542706,"frozenset({'Chocolate Chip Biscotti', 'Cappuccino'})"
+0.0563114134542706,"frozenset({'Cappuccino', 'Chocolate Croissant'})"
+0.0563114134542706,"frozenset({'Dark chocolate', 'Cranberry Scone'})"
+0.05517762660619804,"frozenset({'Dark chocolate', 'Carmel syrup'})"
+0.05517762660619804,"frozenset({'Hazelnut syrup', 'Espresso shot'})"
+0.05517762660619804,"frozenset({'Latte', 'Chocolate Croissant'})"
+0.05517762660619804,"frozenset({'Ginger Scone', 'Latte'})"
+0.05517762660619804,"frozenset({'Jumbo Savory Scone', 'Cappuccino'})"
+0.054799697656840514,"frozenset({'Cappuccino', 'Espresso shot'})"
+0.05442176870748299,"frozenset({'Latte', 'Almond Croissant'})"
+0.054043839758125475,"frozenset({'Latte', 'Ginger Biscotti'})"
+0.05366591080876795,"frozenset({'Dark chocolate', 'Sugar Free Vanilla syrup'})"
+0.05366591080876795,"frozenset({'Chocolate Chip Biscotti', 'Dark chocolate'})"
+0.05366591080876795,"frozenset({'Ginger Biscotti', 'Cappuccino'})"
+0.05328798185941043,"frozenset({'Cappuccino', 'Almond Croissant'})"
+0.05291005291005291,"frozenset({'Chocolate syrup', 'Dark chocolate'})"
+0.05253212396069539,"frozenset({'Cappuccino', 'Cranberry Scone'})"
+0.05139833711262283,"frozenset({'Dark chocolate', 'Jumbo Savory Scone'})"
+0.05139833711262283,"frozenset({'Latte', 'Cranberry Scone'})"
+0.05102040816326531,"frozenset({'Croissant', 'Dark chocolate'})"
