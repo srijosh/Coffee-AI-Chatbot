@@ -8,7 +8,7 @@ const Navigation: React.FC = () => {
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <Link
           to="/"
-          className="text-2xl font-semibold text-app_orange_color hover:opacity-80 transition-opacity duration-200 cursor-pointer"
+          className="text-2xl font-semibold hover:opacity-80 transition-opacity duration-200 cursor-pointer"
           
         >
           Coffee Ghar
@@ -52,7 +52,7 @@ const Navigation: React.FC = () => {
               className=" cursor-pointer px-2 py-1"
               
             >
-              <ShoppingCart size={24} color="#C67C4E" className="cursor-pointer" />
+              <ShoppingCart size={24} color="#D22B2B" className="cursor-pointer" />
             </Link>
           </li>
         </ul>

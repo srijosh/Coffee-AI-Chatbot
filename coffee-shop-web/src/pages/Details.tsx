@@ -62,7 +62,7 @@ const Details: React.FC = () => {
           <button
             onClick={handleAddToCart}
             className="mt-4 w-full py-3 text-white rounded-xl font-semibold hover:bg-opacity-90 transition-opacity duration-200 cursor-pointer"
-            style={{ backgroundColor: '#C67C4E' }}
+            style={{ backgroundColor: '#383838' }} onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#202020')} onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#383838')}
           >
             Add to Cart
           </button>

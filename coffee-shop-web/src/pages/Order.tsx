@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '../components/PageHeader';
-import { Wallet, ChevronDown, CircleDollarSign  } from 'lucide-react';
+import { CircleDollarSign  } from 'lucide-react';
 import { fetchProducts } from '../services/productService';
 import ProductList from '../components/CartProductList';
 import { useCart } from '../components/CartContext';
@@ -100,11 +100,9 @@ const Order: React.FC = () => {
               address={address}
               setAddress={(addr) => {
                 setAddress(addr);
-                // setAddressError(null); // Removed since useEffect handles this
               }}
               onToggle={(mode) => {
                 setDeliveryMode(mode);
-                // setAddressError(null); // Removed since useEffect handles this
               }}
               addressError={addressError}
             />
@@ -112,7 +110,7 @@ const Order: React.FC = () => {
           <div className="bg-white rounded-t-3xl px-7 pt-3 pb-6 shadow-md mt-6">
             <div className="flex justify-between items-center">
               <div className="flex items-center">
-                <CircleDollarSign size={24} color="#C67C4E" />
+                <CircleDollarSign size={24} color="#D22B2B" />
                 <div className="ml-3">
                   <p className="text-gray-800 text-base font-semibold">Cash/Wallet</p>
                   <p className="text-sm font-semibold">
@@ -120,7 +118,6 @@ const Order: React.FC = () => {
                   </p>
                 </div>
               </div>
-              {/* <ChevronDown size={24} color="black" className="cursor-pointer" /> */}
             </div>
             <button
               className={`w-full rounded-2xl mt-6 py-3 text-xl text-white font-semibold cursor-pointer transition-opacity duration-200 ${
@@ -129,7 +126,7 @@ const Order: React.FC = () => {
                   : ' hover:bg-opacity-90'
               }`}
               style={{
-                backgroundColor: isOrderButtonDisabled ? '#D1D5DB' : '#C67C4E',
+                backgroundColor: isOrderButtonDisabled ? '#D1D5DB' : '#383838',
               }}
               disabled={isOrderButtonDisabled}
               onClick={orderNow}

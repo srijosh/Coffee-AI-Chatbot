@@ -6,7 +6,7 @@ import os
 # directory3 = r"C:\Users\Admin\Desktop\Code in a Jiffy  AI Chatbot Using LLMs, Python, RunPod, Hugging Face, and React Native\Coffee_Shop_Ai_Chatbot\python_code\api"
 
 # directory = r"C:\Users\Admin\Desktop\Coffee app\Coffee\coffee-shop-web\src\components"
-directory = r"C:\Users\Admin\Desktop\Coffee app\Coffee\Backend\api"
+directory = r"C:\Users\Admin\Desktop\Coffee app\Coffee\Backend\api\agents"
 
 # Check if the directory exists before listing
 if os.path.exists(directory):

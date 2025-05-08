@@ -19,7 +19,7 @@ const OrdersHeader: React.FC<OrdersHeaderProps> = ({ deliveryMode, address, setA
               ? ' text-white'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
-          style={{ backgroundColor: deliveryMode === 'Deliver' ? '#C67C4E' : undefined }}
+          style={{ backgroundColor: deliveryMode === 'Deliver' ? '#383838' : undefined }}
         >
           Deliver
         </button>
@@ -30,7 +30,7 @@ const OrdersHeader: React.FC<OrdersHeaderProps> = ({ deliveryMode, address, setA
               ? ' text-white'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
-          style={{ backgroundColor: deliveryMode === 'Pick Up' ? '#C67C4E' : undefined }}
+          style={{ backgroundColor: deliveryMode === 'Pick Up' ? '#383838' : undefined }}
         >
           Pick Up
         </button>

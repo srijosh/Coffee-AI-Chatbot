@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchProducts } from '../services/productService';
 import SearchArea from '../components/SearchArea';
-import Banner from '../components/Banner';
 import { useCart } from '../components/CartContext';
 import { Product, ProductCategory } from '../types/types';
 import { toast } from 'react-toastify';
@@ -102,7 +101,7 @@ const Home: React.FC = () => {
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
                 style={{
-                  backgroundColor: category.id === selectedCategory ? '#C67C4E' : undefined,
+                  backgroundColor: category.id === selectedCategory ? '#383838' : undefined,
                 }}
               >
                 {category.id}
@@ -138,9 +137,9 @@ const Home: React.FC = () => {
                   <button
                     onClick={() => handleAddToCart(item.name)}
                     className="px-3 py-1 text-white rounded-sm cursor-pointer duration-200"
-                    style={{ backgroundColor: '#C67C4E' }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#A55D3A')}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#C67C4E')}
+                    style={{ backgroundColor: '#383838' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#202020')}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#383838')}
                   >
                     <span className="text-xl">+</span>
                   </button>

@@ -10,7 +10,7 @@ from agents import (
 class AgentController():
     def __init__(self):
         self.guard_agent = GuardAgent()
-        self.classification_agent = ClassificationAgent()
+        self.classification_agent = ClassificationAgent()   
         self.recommendation_agent = RecommendationAgent(
             "recommendation_objects/apriori_recommendations_scratch.json",
             "recommendation_objects/popularity_recommendation.csv"

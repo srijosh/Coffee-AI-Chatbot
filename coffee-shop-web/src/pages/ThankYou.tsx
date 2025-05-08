@@ -11,7 +11,7 @@ const ThankYou: React.FC = () => {
         <button
           onClick={() => navigate('/')}
           className="text-white px-6 py-2 rounded-lg font-semibold hover:bg-opacity-90 transition-opacity duration-200 cursor-pointer"
-          style={{ backgroundColor: '#C67C4E' }}
+          style={{ backgroundColor: '#383838' }}
         >
           Back to Home
         </button>
