@@ -1,1 +1,14 @@
+// export const API_URL = "http://192.168.120.11:8000"; // Change if deploying to cloud
+// export const API_URL = "http://192.168.1.68:8000";
+
+//home wireless: 
 export const API_URL = "http://192.168.1.70:8000";
+
+
+
+// college wireless:
+// export const API_URL ="http://192.168.210.167:8000";
+
+
+
+// 192.168.210.167

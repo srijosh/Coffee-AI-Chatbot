@@ -17,7 +17,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
             : 'bg-indigo-100 border-indigo-200'
         }`}
       >
-        <p className="text-sm text-gray-800">{message.content}</p>
+        <p className="text-sm text-gray-800 break-words">{message.content}</p>
       </div>
     </div>
   );

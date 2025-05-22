@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
 import MessageList from '../components/MessageList';
 import PageHeader from '../components/PageHeader';
@@ -8,10 +8,17 @@ import { MessageInterface } from '../types/types';
 
 const ChatRoom: React.FC = () => {
   const { addToCart, emptyCart } = useCart();
-  const [messages, setMessages] = useState<MessageInterface[]>([]);
+  const [messages, setMessages] = useState<MessageInterface[]>(() => {
+    const savedMessages = localStorage.getItem('chatMessages');
+    return savedMessages ? JSON.parse(savedMessages) : [];
+  });
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    localStorage.setItem('chatMessages', JSON.stringify(messages));
+  }, [messages]);
 
   const handleSendMessage = async () => {
     if (!inputText.trim()) return;
@@ -27,8 +34,9 @@ const ChatRoom: React.FC = () => {
     setIsTyping(true);
 
     try {
-      const responseMessage = await callChatBotAPI([...messages, userMessage]);
-      setMessages((prev) => [...prev, responseMessage]);
+      // const responseMessage = await callChatBotAPI([...messages, userMessage]);
+      const responseMessage = { role: 'assistant', content: 'This is a mock response from the bot. ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss', memory: { order: [] } }; // Mock response for testing
+      setMessages((prev) => [...prev, { ...responseMessage, role: 'assistant' }]);
       setIsTyping(false);
 
       if (responseMessage.memory && responseMessage.memory.order) {
@@ -39,20 +47,22 @@ const ChatRoom: React.FC = () => {
       }
     } catch (error) {
       console.error('Failed to get bot response:', error);
-      setMessages((prev) => [
-        ...prev,
-        { role: 'bot', content: 'Sorry, something went wrong!' },
-      ]);
+      alert(`${error}`);
       setIsTyping(false);
     }
   };
 
+  const handleClearChat = () => {
+    setMessages([]);
+    localStorage.removeItem('chatMessages');
+  };
+
   return (
-    <div className="w-full min-h-screen bg-neutral-100">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="w-full h-screen flex flex-col bg-neutral-100">
+      <div className="max-w-7xl mx-auto px-4 w-full flex flex-col">
         <PageHeader title="Chat Bot" bgColor="bg-gray-100" />
-        <div className="flex-1 flex flex-col justify-between">
-          <MessageList messages={messages} isTyping={isTyping} />
+        <div className="flex flex-col flex-1">
+          <MessageList messages={messages} isTyping={isTyping} onClearChat={handleClearChat} />
           <div className="pt-2 pb-6 mx-3">
             <div className="flex justify-between items-center border border-neutral-300 bg-white rounded-full pl-5 pr-2 py-2">
               <input
