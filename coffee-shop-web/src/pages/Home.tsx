@@ -1,14 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { fetchProducts } from '../services/productService';
 import SearchArea from '../components/SearchArea';
 import { useCart } from '../components/CartContext';
 import { Product, ProductCategory } from '../types/types';
 import { toast } from 'react-toastify';
+import { useAuth } from '../components/AuthContext';
 
 const Home: React.FC = () => {
-  const { addToCart } = useCart();
+  const { token } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
+  useEffect(() => {
+      if (!token) {
+        navigate('/login', { state: { from: location.pathname } });
+      }
+    }, [token, navigate, location]);
+
+  const { addToCart } = useCart();
+  
   const [products, setProducts] = useState<Product[]>([]);
   const [shownProducts, setShownProducts] = useState<Product[]>([]);
   const [productCategories, setProductCategories] = useState<ProductCategory[]>([]);

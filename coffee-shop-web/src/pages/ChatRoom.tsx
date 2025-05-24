@@ -6,6 +6,10 @@ import { callChatBotAPI } from '../services/chatBot';
 import { useCart } from '../components/CartContext';
 import { MessageInterface } from '../types/types';
 
+import axios from 'axios';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../components/AuthContext';
+
 const ChatRoom: React.FC = () => {
   const { addToCart, emptyCart } = useCart();
   const [messages, setMessages] = useState<MessageInterface[]>(() => {
@@ -16,9 +20,16 @@ const ChatRoom: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const { token } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   useEffect(() => {
     localStorage.setItem('chatMessages', JSON.stringify(messages));
-  }, [messages]);
+    if (!token) {
+      navigate('/login', { state: { from: location.pathname } });
+    }
+  }, [messages, token, navigate, location]);
 
   const handleSendMessage = async () => {
     if (!inputText.trim()) return;
@@ -34,8 +45,8 @@ const ChatRoom: React.FC = () => {
     setIsTyping(true);
 
     try {
-      // const responseMessage = await callChatBotAPI([...messages, userMessage]);
-      const responseMessage = { role: 'assistant', content: 'This is a mock response from the bot. ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss', memory: { order: [] } }; // Mock response for testing
+      const responseMessage = await callChatBotAPI([...messages, userMessage]);
+      // const responseMessage = { role: 'assistant', content: 'This is a mock response from the bot. ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss', memory: { order: [] } }; // Mock response for testing
       setMessages((prev) => [...prev, { ...responseMessage, role: 'assistant' }]);
       setIsTyping(false);
 

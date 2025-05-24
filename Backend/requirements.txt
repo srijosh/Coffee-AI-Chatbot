@@ -12,3 +12,6 @@ sentence-transformers==4.0.2
 mlxtend==0.23.1
 pandas==2.2.3
 pprintpp==0.4.0
+passlib[bcrypt]
+pyjwt==2.10.1
+pydantic[email]

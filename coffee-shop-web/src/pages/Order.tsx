@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import PageHeader from '../components/PageHeader';
 import { CircleDollarSign  } from 'lucide-react';
 import { fetchProducts } from '../services/productService';
@@ -8,9 +8,10 @@ import { useCart } from '../components/CartContext';
 import { Product } from '../types/types';
 import { toast } from 'react-toastify';
 
+import { useAuth } from '../components/AuthContext';
+
 const Order: React.FC = () => {
   const { cartItems, setQuantityCart, emptyCart } = useCart();
-  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -18,6 +19,16 @@ const Order: React.FC = () => {
   const [deliveryMode, setDeliveryMode] = useState<'Deliver' | 'Pick Up'>('Deliver');
   const [address, setAddress] = useState('');
   const [addressError, setAddressError] = useState<string | null>(null);
+
+  const { token } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login', { state: { from: location.pathname } });
+    }
+  }, [token, navigate, location]);
 
   const calculateTotal = (products: Product[], quantities: { [key: string]: number }): number => {
     return products.reduce((total, product) => {
