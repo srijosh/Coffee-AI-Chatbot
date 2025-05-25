@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import PageHeader from '../components/PageHeader';
-import { CircleDollarSign  } from 'lucide-react';
+import { CircleDollarSign } from 'lucide-react';
 import { fetchProducts } from '../services/productService';
 import ProductList from '../components/CartProductList';
 import { useCart } from '../components/CartContext';
-import { Product } from '../types/types';
+import { Product, PaymentData } from '../types/types';
 import { toast } from 'react-toastify';
-
 import { useAuth } from '../components/AuthContext';
+import { createOrder, initiatePayment } from '../services/orderService';
+import { API_URL } from '../config/config';
+
+const USD_TO_NPR_RATE = 132.0; // Must match backend rate
 
 const Order: React.FC = () => {
   const { cartItems, setQuantityCart, emptyCart } = useCart();
@@ -20,7 +23,7 @@ const Order: React.FC = () => {
   const [address, setAddress] = useState('');
   const [addressError, setAddressError] = useState<string | null>(null);
 
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -66,34 +69,81 @@ const Order: React.FC = () => {
     }
   }, [deliveryMode, address]);
 
-  if (loading) return <div className="text-center py-10 text-gray-600">Loading...</div>;
-  if (error) return <div className="text-center py-10 text-red-500">{error}</div>;
-
-  const orderNow = () => {
+  const orderNow = async () => {
     if (deliveryMode === 'Deliver' && address.trim() === '') {
       setAddressError('Address is required');
       return;
     }
-    try {
-      emptyCart();
-      toast.success('Order placed successfully!', {
+
+    if (!user) {
+      toast.error('User not authenticated', {
         position: "top-right",
         autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
       });
-      navigate('/thankyou');
+      return;
+    }
+
+    try {
+      // Prepare order items
+      const items = Object.keys(cartItems)
+        .filter(name => cartItems[name] > 0)
+        .map(name => {
+          const product = products.find(p => p.name === name);
+          return {
+            product_name: name,
+            quantity: cartItems[name],
+            price: product ? product.price : 0,
+          };
+        });
+
+      // Create order
+      const orderResponse = await createOrder(
+        items,
+        user.email,
+        totalPrice,
+        deliveryMode,
+        address,
+        token
+      );
+
+      const { order_id } = orderResponse;
+
+      // Initiate payment
+      const paymentResponse = await initiatePayment(order_id, token);
+
+      // Create form dynamically
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = 'https://rc-epay.esewa.com.np/api/epay/main/v2/form';
+      form.target = '_self'; // Open in same tab
+
+      // Add form fields
+      Object.entries(paymentResponse).forEach(([key, value]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value;
+        form.appendChild(input);
+      });
+
+      // Append form to body and submit
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
     } catch (err) {
       console.error('Error placing order:', err);
-      toast.error('Failed to place order. Please try again.', {
+      toast.error('Failed to initiate payment. Please try again.', {
         position: "top-right",
         autoClose: 3000,
       });
     }
   };
 
+  if (loading) return <div className="text-center py-10 text-gray-600">Loading...</div>;
+  if (error) return <div className="text-center py-10 text-red-500">{error}</div>;
+
+  const totalWithDelivery = totalPrice + (deliveryMode === 'Deliver' ? 1 : 0);
+  const totalInNPR = (totalWithDelivery * USD_TO_NPR_RATE).toFixed(2);
   const isOrderButtonDisabled = totalPrice === 0 || (deliveryMode === 'Deliver' && address.trim() === '');
 
   return (
@@ -125,7 +175,7 @@ const Order: React.FC = () => {
                 <div className="ml-3">
                   <p className="text-gray-800 text-base font-semibold">Cash/Wallet</p>
                   <p className="text-sm font-semibold">
-                    $ {(totalPrice > 0 ? totalPrice + (deliveryMode === 'Deliver' ? 1 : 0) : 0).toFixed(2)}
+                    $ {totalWithDelivery.toFixed(2)} (NPR {totalInNPR})
                   </p>
                 </div>
               </div>
