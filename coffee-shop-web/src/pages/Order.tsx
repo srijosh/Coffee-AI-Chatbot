@@ -23,13 +23,17 @@ const Order: React.FC = () => {
   const [address, setAddress] = useState('');
   const [addressError, setAddressError] = useState<string | null>(null);
 
-  const { token, user } = useAuth();
+  const { token, user, isAuthLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
+    
     if (!token) {
       navigate('/login', { state: { from: location.pathname } });
+    }
+    if (isAuthLoading) {
+      return; // Wait for auth state to be ready
     }
   }, [token, navigate, location]);
 

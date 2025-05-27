@@ -6,6 +6,7 @@ import { fetchProducts } from '../services/productService';
 import { useCart } from '../components/CartContext';
 import { Product } from '../types/types';
 import { toast } from 'react-toastify';
+import { useAuth } from '../components/AuthContext';
 
 const Details: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,8 +15,16 @@ const Details: React.FC = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { token, isAuthLoading } = useAuth();
 
   useEffect(() => {
+    
+    if (!token) {
+      navigate('/login', { state: { from: location.pathname } });
+    }
+    if (isAuthLoading) {
+      return; // Wait for auth state to be ready
+    }
     const loadProduct = async () => {
       try {
         const products = await fetchProducts();

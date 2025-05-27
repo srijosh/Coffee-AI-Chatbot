@@ -8,13 +8,18 @@ import { toast } from 'react-toastify';
 import { useAuth } from '../components/AuthContext';
 
 const Home: React.FC = () => {
-  const { token } = useAuth();
+  const { token, isAuthLoading  } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  
   useEffect(() => {
+    
       if (!token) {
         navigate('/login', { state: { from: location.pathname } });
       }
+      if (isAuthLoading) {
+      return; // Wait for auth state to be ready
+    }
     }, [token, navigate, location]);
 
   const { addToCart } = useCart();

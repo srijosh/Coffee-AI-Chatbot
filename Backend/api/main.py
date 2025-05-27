@@ -19,6 +19,7 @@ import base64
 import logging
 import urllib.parse
 import json
+from typing import List
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -54,7 +55,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # JWT Configuration
 SECRET_KEY = os.getenv("SECRET_KEY", "your_random_secret_key_here")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
 
 # OAuth2 scheme for token authentication
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -291,6 +292,10 @@ async def update_user(
                 if await get_user(user_update.email):
                     raise HTTPException(status_code=400, detail="Email already taken")
                 update_data["email"] = user_update.email
+                orders_result = orders_collection.update_many(
+                    {"user_email": email},
+                    {"$set": {"user_email": user_update.email}}
+                )
         if user_update.phone_number is not None:
             update_data["phone_number"] = user_update.phone_number
 
@@ -526,6 +531,56 @@ async def payment_failure(data: str):
     except Exception as e:
         logger.error(f"Error in payment_failure: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/orders", response_model=List[dict])
+async def get_orders(user_email: str, token: str = Depends(oauth2_scheme)):
+    try:
+        # Verify token
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM], leeway=300)
+        email: str = payload.get("sub")
+        if email is None or email != user_email:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized to view these orders",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        
+        # Fetch orders
+        orders = orders_collection.find({"user_email": user_email})
+        # Convert MongoDB documents to JSON-serializable format
+        serialized_orders = []
+        for order in orders:
+            serialized_order = {
+                "order_id": str(order["_id"]),
+                "user_email": order["user_email"],
+                "items": order["items"],
+                "total_price_usd": order["total_price_usd"],
+                "total_price_npr": order.get("total_price_npr", 0.0),
+                "delivery_mode": order["delivery_mode"],
+                "address": order.get("address"),
+                "status": order.get("status", "pending"),
+                "created_at": order["created_at"].isoformat() if "created_at" in order else None,
+            }
+            serialized_orders.append(serialized_order)
+        
+        return serialized_orders
+    except jwt.ExpiredSignatureError:
+        logger.error("Token has expired")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has expired. Please log in again.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except jwt.InvalidTokenError:
+        logger.error("Invalid token")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token. Please log in again.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except Exception as e:
+        logger.error(f"Error fetching orders: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching orders: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn

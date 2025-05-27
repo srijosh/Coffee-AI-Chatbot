@@ -6,6 +6,7 @@ interface AuthContextType {
   user: { email: string; name: string } | null;
   login: (token: string) => void;
   logout: () => void;
+  isAuthLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -13,6 +14,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [user, setUser] = useState<{ email: string; name: string } | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   useEffect(() => {
     if (token) {
@@ -20,6 +22,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const decoded: { sub: string; name: string } = jwtDecode(token);
         setUser({ email: decoded.sub, name: decoded.name });
       } catch (err) {
+        console.error('Failed to decode token:', err);
         setToken(null);
         setUser(null);
         localStorage.removeItem('token');
@@ -27,6 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } else {
       setUser(null);
     }
+    setIsAuthLoading(false); // Mark loading as complete
   }, [token]);
 
   const login = (newToken: string) => {
@@ -41,7 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ token, user, login, logout }}>
+    <AuthContext.Provider value={{ token, user, login, logout, isAuthLoading }}>
       {children}
     </AuthContext.Provider>
   );

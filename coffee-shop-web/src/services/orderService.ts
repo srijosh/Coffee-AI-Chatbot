@@ -42,3 +42,16 @@ export async function initiatePayment(orderId: string, token: string): Promise<P
     throw new Error('Failed to initiate payment. Please try again.');
   }
 }
+
+export async function fetchUserOrders(userEmail: string, token: string): Promise<any[]> {
+  try {
+    const response = await axios.get(`${API_URL}/orders`, {
+      headers: { Authorization: `Bearer ${token}` },
+      params: { user_email: userEmail },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    throw new Error('Failed to fetch orders. Please try again.');
+  }
+}

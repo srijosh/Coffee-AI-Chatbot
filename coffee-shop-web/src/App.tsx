@@ -10,7 +10,8 @@ import Details from './pages/Details';
 import ThankYou from './pages/ThankYou';
 import Login from './components/Login';
 import Register from './components/Register';
-import Account from './components/Account';
+import Account from './pages/Account';
+import OrderSummary from './pages/OrderSummary'; // New component
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -29,6 +30,7 @@ const App: React.FC = () => {
             <Route path="/chat" element={<ChatRoom />} />
             <Route path="/details/:id" element={<Details />} />
             <Route path="/thankyou" element={<ThankYou />} />
+            <Route path="/order-summary" element={<OrderSummary />} /> {/* New route */}
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
           <ToastContainer />

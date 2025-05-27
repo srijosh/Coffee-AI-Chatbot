@@ -20,14 +20,19 @@ const ChatRoom: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { token } = useAuth();
+  const { token, isAuthLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
+
     localStorage.setItem('chatMessages', JSON.stringify(messages));
+    
     if (!token) {
       navigate('/login', { state: { from: location.pathname } });
+    }
+    if (isAuthLoading) {
+      return; // Wait for auth state to be ready
     }
   }, [messages, token, navigate, location]);
 

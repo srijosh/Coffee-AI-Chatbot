@@ -1,25 +1,25 @@
 export interface Product {
-    id: string;
-    category: string;
-    description: string;
-    image_url: string;
-    name: string;
-    price: number;
-    rating: number;
-  }
-  
-  export interface ProductCategory {
-    id: string;
-    selected: boolean;
-  }
-  
-  export interface MessageInterface {
-    role: string;
-    content: string;
-    memory?: any;
-  }
+  id: string;
+  category: string;
+  description: string;
+  image_url: string;
+  name: string;
+  price: number;
+  rating: number;
+}
 
-  export interface PaymentData {
+export interface ProductCategory {
+  id: string;
+  selected: boolean;
+}
+
+export interface MessageInterface {
+  role: string;
+  content: string;
+  memory?: any;
+}
+
+export interface PaymentData {
   amount: string;
   total_amount: string;
   transaction_uuid: string;
@@ -41,4 +41,16 @@ export interface OrderItem {
 
 export interface OrderResponse {
   order_id: string;
+}
+
+export interface Order {
+  order_id: string;
+  user_email: string;
+  items: OrderItem[];
+  total_price_usd: number;
+  total_price_npr: number;
+  delivery_mode: 'Deliver' | 'Pick Up';
+  address: string | null;
+  status: string;
+  created_at: string;
 }
