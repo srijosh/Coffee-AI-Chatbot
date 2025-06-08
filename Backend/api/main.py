@@ -102,12 +102,6 @@ class OrderCreate(BaseModel):
     delivery_mode: str
     address: Optional[str] = None
 
-class PaymentResponse(BaseModel):
-    transaction_uuid: str
-    status: str
-    amount_npr: float
-    message: str
-
 # Helper functions
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
@@ -437,8 +431,6 @@ async def initiate_payment(order_id: str, token: str = Depends(oauth2_scheme)):
     except Exception as e:
         logger.error(f"Error in initiate_payment: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
-
-# ... (previous imports and setup remain the same)
 
 @app.get("/payment-success")
 async def payment_success(data: str):
