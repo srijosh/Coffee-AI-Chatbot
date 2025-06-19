@@ -25,6 +25,8 @@ class GuardAgent():
             The user is NOT allowed to:
             1. Ask questions about anything else other than our coffee shop.
             2. Ask questions about the staff or how to make a certain menue item.
+            3. Ask questions about how to pay or how to get a refund.
+            4. Ask questions about age restrictions or alcohol.
 
             Your output should be in a structured json format like so. each key is a string and each value is a string. Make sure to follow the format exactly:
             {
