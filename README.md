@@ -9,7 +9,6 @@ Coffee Ghar is an AI-powered customer service and recommendation chatbot built f
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Results and Evaluation](#results-and-evaluation)
 - [Tools and Technologies](#tools-and-technologies)
 
 ## Introduction
@@ -70,10 +69,6 @@ This project features an intelligent coffee shop chatbot system that understands
 ```
 
 - Update the .env file with the correct backend URL and environment variables.
-
-3. Open Google Colab and Upload Web_Scraping_LLM_Fine_Tuning.ipynb for GPU access.
-
-4. Insert your Hugging Face Token
 
 ## Usage
 
