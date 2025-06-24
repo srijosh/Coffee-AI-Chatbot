@@ -6,13 +6,12 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Get API key from .env
 API_KEY = os.getenv("GROQ_API_KEY")
-MODEL_NAME = os.getenv("MODEL_NAME")  # Adjust model name if needed
+MODEL_NAME = os.getenv("MODEL_NAME")  
 
 # Initialize Groq Embeddings model
 embedding_model = HuggingFaceEmbeddings(
-    model_name="sentence-transformers/all-MiniLM-L6-v2"  # Change model if needed
+    model_name="sentence-transformers/all-MiniLM-L6-v2"
 )
 
 # Initialize Chat Model
@@ -27,7 +26,7 @@ def get_embedding(text_input):
 
 def get_chatbot_response(user_prompt):
     """Get response from Groq chatbot using direct invocation."""
-    return chat_model.invoke(user_prompt).content  # Directly invoke with string input
+    return chat_model.invoke(user_prompt).content  
 
 def double_check_json_output(json_string):
     """Validates and corrects a JSON string using the chatbot model."""
@@ -45,5 +44,5 @@ def double_check_json_output(json_string):
     ```
     """
 
-    # Call chatbot
-    return get_chatbot_response(user_prompt).replace("`", "")  # Clean stray backticks
+    
+    return get_chatbot_response(user_prompt).replace("`", "") 

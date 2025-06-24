@@ -63,18 +63,6 @@ def apriori(df, min_support=0.05, use_colnames=True):
     
     # Sort by support value
     result = result.sort_values('support', ascending=False).reset_index(drop=True)
-
-
-
-    # Sort itemsets alphabetically by their first item (converted to sorted list)
-    # result['sorted_items'] = result['itemsets'].apply(lambda x: sorted(list(x)))
-    # result = result.sort_values(by='sorted_items').reset_index(drop=True)
-
-    # # Optional: drop the helper column if you don’t need it
-    # result.drop(columns='sorted_items', inplace=True)
-
-
-    
     return result
 
 def association_rules(frequent_itemsets, metric="confidence", min_threshold=0.8):
@@ -82,7 +70,7 @@ def association_rules(frequent_itemsets, metric="confidence", min_threshold=0.8)
     rules = []
     
     for _, row in frequent_itemsets.iterrows():
-        itemset = row['itemsets']  # Already a frozenset
+        itemset = row['itemsets'] 
         support_itemset = row['support']
         
         if len(itemset) < 2:
@@ -117,8 +105,8 @@ def association_rules(frequent_itemsets, metric="confidence", min_threshold=0.8)
                 if (metric == 'confidence' and confidence >= min_threshold) or \
                    (metric == 'lift' and lift >= min_threshold):
                     rules.append({
-                        'antecedents': antecedent,  # Keep as frozenset
-                        'consequents': consequent,   # Keep as frozenset
+                        'antecedents': antecedent,  
+                        'consequents': consequent,   
                         'antecedent support': ant_support,
                         'consequent support': cons_support,
                         'support': support_itemset,

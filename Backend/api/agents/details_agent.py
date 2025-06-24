@@ -30,13 +30,9 @@ class DetailsAgent():
         messages = deepcopy(messages)
         user_message = messages[-1]['content']
 
-        # Get embeddings using Groq's embedding service
         embedding = get_embedding(user_message)
         result = self.get_closest_results(self.index_name, embedding)
 
-        # # Prepare context from retrieved knowledge
-        # source_knowledge = "\n".join([x['metadata']['text'].strip() + '\n' for x in result['matches']])
- # Prepare context from retrieved knowledge
         source_knowledge = "\n".join([
             match['metadata']['text'].strip()
             for match in result.get('matches', []) if 'metadata' in match and 'text' in match['metadata']
