@@ -462,15 +462,22 @@ async def payment_success(data: str):
             logger.warning("eSewa signature verification skipped (VERIFY_ESEWA_SIGNATURE is False)")
         
         # Update order status
-        result = orders_collection.update_one(
+        order = orders_collection.find_one({"transaction_uuid": transaction_uuid})
+        if order:
+        # Update order status
+            result = orders_collection.update_one(
             {"transaction_uuid": transaction_uuid},
             {"$set": {"status": "completed"}}
-        )
+            )
         if result.matched_count == 0:
             logger.warning(f"No order found with transaction_uuid: {transaction_uuid}")
         
+        # Extract cart items from the order
+        cart_items = {item["product_name"]: item["quantity"] for item in order["items"]}
+            # Encode cart items for URL
+        encoded_items = urllib.parse.quote(json.dumps(cart_items))
         # Redirect to the ThankYou page with a flag
-        return RedirectResponse(url="http://localhost:5173/thankyou?status=success&fromPayment=true")  # Updated port and added flag
+        return RedirectResponse(url=f"http://localhost:5173/thankyou?status=success&fromPayment=true&items={encoded_items}")  # Updated port and added flag
     except base64.binascii.Error as e:
         logger.error(f"Base64 decoding error: {str(e)}")
         raise HTTPException(status_code=400, detail="Invalid Base64 data from eSewa")
