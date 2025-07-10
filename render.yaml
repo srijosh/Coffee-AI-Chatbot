@@ -7,20 +7,35 @@ services:
     startCommand: bash Backend/start.sh
     envVars:
       - key: PINECONE_API_KEY
+        value: ""
       - key: PINECONE_INDEX_NAME
+        value: ""
       - key: MODEL_NAME
+        value: ""
       - key: GROQ_API_KEY
+        value: ""
       - key: MONGO_URI
+        value: ""
       - key: CLOUDINARY_CLOUD_NAME
+        value: ""
       - key: CLOUDINARY_API_KEY
+        value: ""
       - key: CLOUDINARY_API_SECRET
+        value: ""
       - key: SECRET_KEY
+        value: ""
       - key: ALGORITHM
+        value: ""
       - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: ""
       - key: ESEWA_SANDBOX_URL
+        value: ""
       - key: ESEWA_MERCHANT_CODE
+        value: ""
       - key: ESEWA_SECRET_KEY
+        value: ""
       - key: USD_TO_NPR_RATE
+        value: ""
 
   - type: web
     name: coffee-frontend
@@ -30,3 +45,4 @@ services:
     startCommand: cd coffee-shop-web && npm run preview -- --port 3000
     envVars:
       - key: VITE_BACKEND_URL
+        value: ""
