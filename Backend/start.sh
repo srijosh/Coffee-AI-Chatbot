@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-uvicorn Backend.api.main:app --host 0.0.0.0 --port 10000
+cd Backend/api
+uvicorn main:app --host 0.0.0.0 --port 10000
