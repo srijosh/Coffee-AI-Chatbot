@@ -5,7 +5,13 @@
 // export const API_URL = "http://192.168.1.70:8000";
 
 //new home ethernet address:
-export const API_URL = "http://192.168.1.66:8000";
+// export const API_URL = "http://192.168.1.66:8000";
+
+//For render
+export const API_URL = import.meta.env.VITE_BACKEND_URL
+
+// For local development
+// export const API_URL ="http://localhost:8000";
 
 // college wireless:
 // export const API_URL ="http://192.168.210.167:8000";

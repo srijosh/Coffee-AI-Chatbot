@@ -1,2 +1,3 @@
 Backend/.env
 Backend/api/.env
+Backend/api/model_cache/

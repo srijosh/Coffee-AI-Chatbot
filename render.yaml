@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: coffee-backend
+    env: python
+    plan: free
+    buildCommand: pip install -r Backend/requirements.txt
+    startCommand: bash Backend/start.sh
+    envVars:
+      - key: PINECONE_API_KEY
+      - key: PINECONE_INDEX_NAME
+      - key: MODEL_NAME
+      - key: GROQ_API_KEY
+      - key: MONGO_URI
+      - key: CLOUDINARY_CLOUD_NAME
+      - key: CLOUDINARY_API_KEY
+      - key: CLOUDINARY_API_SECRET
+      - key: SECRET_KEY
+      - key: ALGORITHM
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+      - key: ESEWA_SANDBOX_URL
+      - key: ESEWA_MERCHANT_CODE
+      - key: ESEWA_SECRET_KEY
+      - key: USD_TO_NPR_RATE
+
+  - type: web
+    name: coffee-frontend
+    env: node
+    plan: free
+    buildCommand: cd coffee-shop-web && npm install && npm run build
+    startCommand: cd coffee-shop-web && npm run preview -- --port 3000
+    envVars:
+      - key: VITE_BACKEND_URL
