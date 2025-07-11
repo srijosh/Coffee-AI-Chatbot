@@ -9,11 +9,17 @@ load_dotenv()
 API_KEY = os.getenv("GROQ_API_KEY")
 MODEL_NAME = os.getenv("MODEL_NAME")  
 
-# Initialize Groq Embeddings model
-embedding_model = HuggingFaceEmbeddings(
+# Initialize Groq Embeddings model locally
+# embedding_model = HuggingFaceEmbeddings(
+#     model_name="sentence-transformers/all-MiniLM-L6-v2"
+# )
+
+# Initialize HuggingFaceInferenceAPIEmbeddings for embedding generation in cloud
+from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
+embedding_model = HuggingFaceInferenceAPIEmbeddings(
+    api_key=os.getenv("HUGGINGFACE_API_KEY"),
     model_name="sentence-transformers/all-MiniLM-L6-v2"
 )
-
 # Initialize Chat Model
 chat_model = ChatGroq(
     model=MODEL_NAME,

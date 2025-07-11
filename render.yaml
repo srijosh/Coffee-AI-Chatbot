@@ -36,6 +36,8 @@ services:
         value: ""
       - key: USD_TO_NPR_RATE
         value: ""
+      - key: HUGGINGFACE_API_KEY
+        value: ""
 
   - type: web
     name: coffee-frontend
