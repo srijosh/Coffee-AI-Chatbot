@@ -44,7 +44,7 @@ services:
     env: node
     plan: free
     buildCommand: cd coffee-shop-web && npm install && npm run build
-    startCommand: cd coffee-shop-web && npm run preview -- --port 3000
+    startCommand: cd coffee-shop-web && npm run preview -- --host 0.0.0.0 --port 3000
     envVars:
       - key: VITE_BACKEND_URL
         value: ""
