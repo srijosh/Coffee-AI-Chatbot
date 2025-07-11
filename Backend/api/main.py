@@ -359,6 +359,7 @@ async def create_order(order: OrderCreate, token: str = Depends(oauth2_scheme)):
         logger.error(f"Error in create_order: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+BACKEND_URL = os.getenv("BACKEND_URL")
 @app.post("/initiate-payment/{order_id}")
 async def initiate_payment(order_id: str, token: str = Depends(oauth2_scheme)):
     try:
@@ -407,8 +408,8 @@ async def initiate_payment(order_id: str, token: str = Depends(oauth2_scheme)):
             "tax_amount": "0",
             "product_service_charge": "0",
             "product_delivery_charge": "0",
-            "success_url": "http://localhost:8000/payment-success",
-            "failure_url": "http://localhost:8000/payment-failure",
+            "success_url": f"{BACKEND_URL}/payment-success",
+            "failure_url": f"{BACKEND_URL}/payment-failure",
             "signed_field_names": "total_amount,transaction_uuid,product_code",
             "signature": signature
         }

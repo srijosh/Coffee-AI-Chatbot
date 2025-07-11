@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_KEY = os.getenv("GROQ_API_KEY")
-MODEL_NAME = os.getenv("MODEL_NAME")  
+MODEL_NAME = os.getenv("MODEL_NAME")
 
 USE_CLOUD_EMBEDDINGS = os.getenv("USE_CLOUD_EMBEDDINGS", "false").lower() == "true"
 if USE_CLOUD_EMBEDDINGS:
