@@ -6,7 +6,7 @@ import { callChatBotAPI } from '../services/chatBot';
 import { useCart } from '../components/CartContext';
 import { MessageInterface } from '../types/types';
 
-import axios from 'axios';
+// import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
 

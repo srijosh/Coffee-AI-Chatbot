@@ -5,16 +5,16 @@ import { CircleDollarSign } from 'lucide-react';
 import { fetchProducts } from '../services/productService';
 import ProductList from '../components/CartProductList';
 import { useCart } from '../components/CartContext';
-import { Product, PaymentData } from '../types/types';
+import { Product } from '../types/types';
 import { toast } from 'react-toastify';
 import { useAuth } from '../components/AuthContext';
 import { createOrder, initiatePayment } from '../services/orderService';
-import { API_URL } from '../config/config';
+// import { API_URL } from '../config/config';
 
 const USD_TO_NPR_RATE = 132.0; // Must match backend rate
 
 const Order: React.FC = () => {
-  const { cartItems, setQuantityCart, emptyCart } = useCart();
+  const { cartItems, setQuantityCart} = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -107,13 +107,13 @@ const Order: React.FC = () => {
         totalPrice,
         deliveryMode,
         address,
-        token
+        token || ""
       );
 
       const { order_id } = orderResponse;
 
       // Initiate payment
-      const paymentResponse = await initiatePayment(order_id, token);
+      const paymentResponse = await initiatePayment(order_id, token || "");
 
       // Create form dynamically
       const form = document.createElement('form');

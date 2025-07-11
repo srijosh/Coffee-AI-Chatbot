@@ -32,7 +32,8 @@ const Login: React.FC = () => {
       });
       navigate('/');
     } catch (err) {
-      setError(err.message);
+      // setError(err.message);
+      setError(err instanceof Error ? err.message : String(err));
     }
   };
 

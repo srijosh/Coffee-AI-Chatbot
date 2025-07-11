@@ -29,7 +29,8 @@ const Account: React.FC = () => {
         setUserDetails(details);
         setFormData({ name: details.name, email: details.email, phone_number: details.phone_number });
       } catch (err) {
-        setError(err.message);
+        // setError(err.message);
+        setError(err instanceof Error ? err.message : String(err));
       }
     };
     getUserDetails();
@@ -65,7 +66,8 @@ const Account: React.FC = () => {
         navigate(loginUrl, { state: { from: location.pathname } });
       }
     } catch (err) {
-      setError(err.message);
+      // setError(err.message);
+      setError(err instanceof Error ? err.message : String(err));
     }
   };
 

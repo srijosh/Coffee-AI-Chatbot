@@ -17,7 +17,8 @@ const Register: React.FC = () => {
       await callregister(name, email, password, phoneNumber);
       navigate('/login');
     } catch (err) {
-      setError(err.message);
+      // setError(err.message);
+      setError(err instanceof Error ? err.message : String(err));
     }
   };
 
