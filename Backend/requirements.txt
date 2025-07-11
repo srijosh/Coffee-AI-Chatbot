@@ -16,3 +16,4 @@ passlib[bcrypt]
 pyjwt==2.10.1
 pydantic[email]
 python-multipart
+langchain-huggingface
