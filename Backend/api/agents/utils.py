@@ -9,17 +9,28 @@ load_dotenv()
 API_KEY = os.getenv("GROQ_API_KEY")
 MODEL_NAME = os.getenv("MODEL_NAME")  
 
+USE_CLOUD_EMBEDDINGS = os.getenv("USE_CLOUD_EMBEDDINGS", "false").lower() == "true"
+if USE_CLOUD_EMBEDDINGS:
+    from langchain_huggingface import HuggingFaceEndpointEmbeddings
+    embedding_model = HuggingFaceEndpointEmbeddings(
+        model="sentence-transformers/all-MiniLM-L6-v2",
+        task="feature-extraction",
+        huggingfacehub_api_token=os.getenv("HUGGINGFACE_API_KEY"),
+    )
+    print("Using cloud embedding model:", embedding_model.model)
+else:
+    from langchain_community.embeddings import HuggingFaceEmbeddings
+    embedding_model = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2",
+        cache_folder="./model_cache"
+    )
+
 # Initialize Groq Embeddings model locally
 # embedding_model = HuggingFaceEmbeddings(
-#     model_name="sentence-transformers/all-MiniLM-L6-v2"
+#     model_name="sentence-transformers/all-MiniLM-L6-v2",
+#     cache_folder="./model_cache"
 # )
 
-# Initialize HuggingFaceInferenceAPIEmbeddings for embedding generation in cloud
-from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
-embedding_model = HuggingFaceInferenceAPIEmbeddings(
-    api_key=os.getenv("HUGGINGFACE_API_KEY"),
-    model_name="sentence-transformers/all-MiniLM-L6-v2"
-)
 # Initialize Chat Model
 chat_model = ChatGroq(
     model=MODEL_NAME,

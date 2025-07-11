@@ -183,6 +183,8 @@ def chat_endpoint(request: ChatRequest):
         response = agent_controller.get_response(request.model_dump())
         return {"output": response}
     except Exception as e:
+        import traceback
+        print(traceback.format_exc())  # Add this line
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/products")
@@ -431,7 +433,7 @@ async def initiate_payment(order_id: str, token: str = Depends(oauth2_scheme)):
     except Exception as e:
         logger.error(f"Error in initiate_payment: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
-
+FRONTEND_URL = os.getenv("FRONTEND_URL")
 @app.get("/payment-success")
 async def payment_success(data: str):
     try:
@@ -477,7 +479,7 @@ async def payment_success(data: str):
             # Encode cart items for URL
         encoded_items = urllib.parse.quote(json.dumps(cart_items))
         # Redirect to the ThankYou page with a flag
-        return RedirectResponse(url=f"http://localhost:5173/thankyou?status=success&fromPayment=true&items={encoded_items}")  # Updated port and added flag
+        return RedirectResponse(url=f"{FRONTEND_URL}/thankyou?status=success&fromPayment=true&items={encoded_items}")  # Updated port and added flag
     except base64.binascii.Error as e:
         logger.error(f"Base64 decoding error: {str(e)}")
         raise HTTPException(status_code=400, detail="Invalid Base64 data from eSewa")
@@ -523,7 +525,7 @@ async def payment_failure(data: str):
             logger.warning(f"No order found with transaction_uuid: {transaction_uuid}")
         
         # Redirect to the ThankYou page with a flag
-        return RedirectResponse(url="http://localhost:5173/thankyou?status=failed&fromPayment=true")  # Updated port and added flag
+        return RedirectResponse(url="{FRONTEND_URL}/thankyou?status=failed&fromPayment=true")  # Updated port and added flag
     except base64.binascii.Error as e:
         logger.error(f"Base64 decoding error: {str(e)}")
         raise HTTPException(status_code=400, detail="Invalid Base64 data from eSewa")

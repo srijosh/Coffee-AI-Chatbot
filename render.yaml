@@ -38,6 +38,10 @@ services:
         value: ""
       - key: HUGGINGFACE_API_KEY
         value: ""
+      - key: FRONTEND_URL
+        value: "https://coffee-frontend-7tgb.onrender.com"
+      - key: USE_CLOUD_EMBEDDINGS
+        value: "true"
 
   - type: web
     name: coffee-frontend
@@ -47,4 +51,4 @@ services:
     startCommand: cd coffee-shop-web && npm run preview -- --host 0.0.0.0 --port 3000
     envVars:
       - key: VITE_BACKEND_URL
-        value: ""
+        value: "https://coffee-backend-s37s.onrender.com"
