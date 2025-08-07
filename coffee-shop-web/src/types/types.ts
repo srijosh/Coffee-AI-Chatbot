@@ -1,3 +1,37 @@
+
+// Admin types
+export interface AdminStats {
+  total_orders: number;
+  total_revenue: number;
+  total_items_sold: number;
+}
+
+export interface AdminUser {
+  _id: string;
+  name: string;
+  email: string;
+  phone_number: string;
+  is_admin: boolean;
+}
+
+export interface AdminOrderItem {
+  product_name: string;
+  quantity: number;
+  price?: number;
+}
+
+export interface AdminOrder {
+  _id: string;
+  user_email: string;
+  items: AdminOrderItem[];
+  total_price_usd: number;
+  total_price_npr: number;
+  delivery_mode: string;
+  address?: string;
+  payment_status: string;
+  delivery_status?: string;
+  created_at?: string;
+}
 export interface Product {
   id: string;
   category: string;
@@ -6,6 +40,7 @@ export interface Product {
   name: string;
   price: number;
   rating: number;
+  stock: number;
 }
 
 export interface ProductCategory {
@@ -51,6 +86,7 @@ export interface Order {
   total_price_npr: number;
   delivery_mode: 'Deliver' | 'Pick Up';
   address: string | null;
-  status: string;
+  payment_status: string;
+  delivery_status: string;
   created_at: string;
 }

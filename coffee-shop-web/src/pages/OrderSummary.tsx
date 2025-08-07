@@ -52,8 +52,14 @@ const OrderSummary: React.FC = () => {
           <h2 className="text-lg font-semibold">Order ID: {order.order_id}</h2>
           <p className="text-gray-600">Date: {new Date(order.created_at).toLocaleDateString()}</p>
           <p className="text-gray-600">Total: ${order.total_price_usd.toFixed(2)} (Rs. {order.total_price_npr.toFixed(2)})</p>
-          <p className="text-gray-600">Status: {order.status}</p>
-          <p className="text-gray-600">Delivery: {order.delivery_mode} {order.address ? `- ${order.address}` : ''}</p>
+          <p className="text-gray-600">Payment Status: {order.payment_status}</p>
+          <p className="text-gray-600">Delivery / PickUp: {order.delivery_mode} {order.address ? `- ${order.address}` : ''}</p>
+          {order.delivery_status && order.delivery_status.trim() !== "" && (
+          <p className="text-gray-600">
+            Delivery Status: {order.delivery_status}
+          </p>
+          )}
+
           <h3 className="text-md font-medium mt-2">Items:</h3>
           <ul className="list-disc list-inside">
             {order.items.map((item, index) => (

@@ -57,6 +57,7 @@ const ProductList: React.FC<ProductListProps> = ({
                 <button
                   onClick={() => setQuantities(item.name, 1)}
                   className="text-xl text-gray-700 p-1 rounded-full hover:bg-gray-200 cursor-pointer"
+                  disabled={quantities[item.name] >= item.stock}
                 >
                   +
                 </button>

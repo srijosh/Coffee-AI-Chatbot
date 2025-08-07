@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import FastAPI, HTTPException, Depends, status, Body
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, EmailStr
@@ -64,7 +64,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 ESEWA_SANDBOX_URL = os.getenv("ESEWA_SANDBOX_URL", "https://rc-epay.esewa.com.np/api/epay/main/v2/form")
 ESEWA_MERCHANT_CODE = os.getenv("ESEWA_MERCHANT_CODE", "EPAYTEST")
 ESEWA_SECRET_KEY = os.getenv("ESEWA_SECRET_KEY", "8gBm/:&EnhH.1/q")
-USD_TO_NPR_RATE = float(os.getenv("USD_TO_NPR_RATE", 132.0))
+USD_TO_NPR_RATE = float(os.getenv("USD_TO_NPR_RATE",137.67))
 
 VERIFY_ESEWA_SIGNATURE = False  # Set to False for sandbox testing, True in production
 
@@ -72,11 +72,14 @@ VERIFY_ESEWA_SIGNATURE = False  # Set to False for sandbox testing, True in prod
 class ChatRequest(BaseModel):
     input: dict
 
+
 class User(BaseModel):
     name: str
     email: EmailStr
     password: str
     phone_number: str
+    is_admin: bool = False
+
 
 class UserInDB(User):
     hashed_password: str
@@ -101,6 +104,10 @@ class OrderCreate(BaseModel):
     total_price_usd: float
     delivery_mode: str
     address: Optional[str] = None
+    delivery_status: Optional[str] = None
+
+class StockUpdate(BaseModel):
+    stock: int
 
 # Helper functions
 def hash_password(password: str) -> str:
@@ -197,6 +204,7 @@ def get_products():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.post("/register")
 async def register(user: User):
     if await get_user(user.email):
@@ -210,6 +218,7 @@ async def register(user: User):
         "email": user.email,
         "hashed_password": hashed_password,
         "phone_number": user.phone_number,
+        "is_admin": False,  # Always False on registration
     }
     try:
         result = users_collection.insert_one(user_dict)
@@ -239,6 +248,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
+
 @app.get("/users/me")
 async def read_users_me(token: str = Depends(oauth2_scheme)):
     try:
@@ -260,7 +270,13 @@ async def read_users_me(token: str = Depends(oauth2_scheme)):
     user = await get_user(email)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    return {"email": user["email"], "name": name, "phone_number": user["phone_number"]}
+    return {
+        "email": user["email"],
+        "name": name,
+        "phone_number": user["phone_number"],
+        "is_admin": user.get("is_admin", False)
+    }
+
 
 @app.put("/users/me")
 async def update_user(
@@ -294,19 +310,21 @@ async def update_user(
                 )
         if user_update.phone_number is not None:
             update_data["phone_number"] = user_update.phone_number
+        # Never allow users to set is_admin themselves
 
         if not update_data:
-            return {"email": user["email"], "name": user["name"], "phone_number": user["phone_number"]}
+            return {"email": user["email"], "name": user["name"], "phone_number": user["phone_number"], "is_admin": user.get("is_admin", False)}
 
         result = users_collection.update_one({"email": email}, {"$set": update_data})
         if result.modified_count == 0:
-            return {"email": user["email"], "name": user["name"], "phone_number": user["phone_number"]}
+            return {"email": user["email"], "name": user["name"], "phone_number": user["phone_number"], "is_admin": user.get("is_admin", False)}
 
         updated_user = await get_user(email if not user_update.email else user_update.email)
         return {
             "name": updated_user["name"],
             "email": updated_user["email"],
-            "phone_number": updated_user["phone_number"]
+            "phone_number": updated_user["phone_number"],
+            "is_admin": updated_user.get("is_admin", False)
         }
     except jwt.PyJWTError:
         raise HTTPException(
@@ -316,6 +334,87 @@ async def update_user(
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+# --- ADMIN ENDPOINTS ---
+
+def require_admin(token: str = Depends(oauth2_scheme)):
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM], leeway=300)
+    email: str = payload.get("sub")
+    user = users_collection.find_one({"email": email})
+    if not user or not user.get("is_admin", False):
+        raise HTTPException(status_code=403, detail="Not authorized")
+    return user
+
+# Get all products (with stock) for admin
+@app.get("/admin/products")
+async def admin_get_products(user=Depends(require_admin)):
+    products = list(products_collection.find())
+    for product in products:
+        product["_id"] = str(product["_id"])
+    return {"products": products}
+
+# Update stock for a product
+@app.put("/admin/products/{product_id}/stock")
+async def admin_update_product_stock(product_id: str, stock_update: StockUpdate, user=Depends(require_admin)):
+    stock = stock_update.stock
+    result = products_collection.update_one({"_id": ObjectId(product_id)}, {"$set": {"stock": stock}})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return {"message": "Stock updated"}
+
+# Admin dashboard stats
+@app.get("/admin/stats")
+async def admin_stats(user=Depends(require_admin)):
+    total_orders = orders_collection.count_documents({"payment_status": "completed"})
+    total_revenue = sum(
+        order.get("total_price_npr", 0)
+        for order in orders_collection.find({"payment_status": "completed"})
+    )
+    total_items_sold = sum(
+        item["quantity"]
+        for order in orders_collection.find({"payment_status": "completed"})
+        for item in order["items"]
+    )
+    return {
+        "total_orders": total_orders,
+        "total_revenue": total_revenue,
+        "total_items_sold": total_items_sold
+    }
+
+# Admin: get all orders
+@app.get("/admin/orders")
+async def admin_get_orders(user=Depends(require_admin)):
+    orders = list(orders_collection.find())
+    for order in orders:
+        order["_id"] = str(order["_id"])
+    return orders
+
+# Admin: update delivery status
+@app.put("/admin/orders/{order_id}/delivery-status")
+async def update_delivery_status(order_id: str, new_status: str, user=Depends(require_admin)):
+    result = orders_collection.update_one(
+        {"_id": ObjectId(order_id)},
+        {"$set": {"delivery_status": new_status}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return {"message": "Delivery status updated"}
+
+# Admin: get all users
+@app.get("/admin/users")
+async def admin_get_users(user=Depends(require_admin)):
+    users = list(users_collection.find())
+    for u in users:
+        u["_id"] = str(u["_id"])
+        u.pop("hashed_password", None)
+    return users
+
+# Admin: delete user
+@app.delete("/admin/users/{user_id}")
+async def admin_delete_user(user_id: str, user=Depends(require_admin)):
+    result = users_collection.delete_one({"_id": ObjectId(user_id)})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"message": "User deleted"}
 
 # New Endpoints for eSewa Payment
 @app.post("/create-order")
@@ -326,8 +425,9 @@ async def create_order(order: OrderCreate, token: str = Depends(oauth2_scheme)):
         if email != order.user_email:
             raise HTTPException(status_code=403, detail="Not authorized to create order for this user")
         
-        total_price_npr = order.total_price_usd * USD_TO_NPR_RATE
         
+        total_price_npr = round(order.total_price_usd * USD_TO_NPR_RATE)
+       
         order_dict = {
             "user_email": order.user_email,
             "items": [item.dict() for item in order.items],
@@ -336,7 +436,8 @@ async def create_order(order: OrderCreate, token: str = Depends(oauth2_scheme)):
             "delivery_mode": order.delivery_mode,
             "address": order.address,
             "transaction_uuid": str(uuid.uuid4()),
-            "status": "pending",
+            "payment_status": "pending",
+            "delivery_status": order.delivery_status,
             "created_at": datetime.utcnow()
         }
         result = orders_collection.insert_one(order_dict)
@@ -434,6 +535,7 @@ async def initiate_payment(order_id: str, token: str = Depends(oauth2_scheme)):
     except Exception as e:
         logger.error(f"Error in initiate_payment: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
+    
 FRONTEND_URL = os.getenv("FRONTEND_URL")
 @app.get("/payment-success")
 async def payment_success(data: str):
@@ -470,8 +572,14 @@ async def payment_success(data: str):
         # Update order status
             result = orders_collection.update_one(
             {"transaction_uuid": transaction_uuid},
-            {"$set": {"status": "completed"}}
+            {"$set": {"payment_status": "completed"}}
             )
+            # Decrement product stock for each item
+            for item in order["items"]:
+                products_collection.update_one(
+                    {"name": item["product_name"]},
+                    {"$inc": {"stock": -int(item["quantity"])}}
+                )
         if result.matched_count == 0:
             logger.warning(f"No order found with transaction_uuid: {transaction_uuid}")
         
@@ -520,7 +628,7 @@ async def payment_failure(data: str):
         # Update order status
         result = orders_collection.update_one(
             {"transaction_uuid": transaction_uuid},
-            {"$set": {"status": "failed"}}
+            {"$set": {"payment_status": "failed"}}
         )
         if result.matched_count == 0:
             logger.warning(f"No order found with transaction_uuid: {transaction_uuid}")
@@ -560,7 +668,8 @@ async def get_orders(user_email: str, token: str = Depends(oauth2_scheme)):
                 "total_price_npr": order.get("total_price_npr", 0.0),
                 "delivery_mode": order["delivery_mode"],
                 "address": order.get("address"),
-                "status": order.get("status", "pending"),
+                "payment_status": order.get("payment_status", "pending"),
+                "delivery_status": order.get("delivery_status"),
                 "created_at": order["created_at"].isoformat() if "created_at" in order else None,
             }
             serialized_orders.append(serialized_order)

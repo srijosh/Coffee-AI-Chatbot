@@ -17,6 +17,7 @@ export async function fetchProducts(): Promise<Product[]> {
       image_url: product.image_url,
       rating: product.rating || 0,
       description: product.description || '',
+      stock: product.stock,
     }));
 
     return products;

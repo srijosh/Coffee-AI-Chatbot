@@ -4,6 +4,12 @@ import requests
 from copy import deepcopy
 from dotenv import load_dotenv
 from .utils import get_chatbot_response, double_check_json_output
+from pymongo import MongoClient
+
+mongo_uri = os.getenv("MONGO_URI")
+client = MongoClient(mongo_uri)
+db = client["coffeeapp"]
+products_collection = db["products"]
 
 load_dotenv()
 
@@ -101,27 +107,57 @@ class OrderTakingAgent():
 
         return output
 
-    def postprocess(self,output,messages,asked_recommendation_before):
+    def postprocess(self, output, messages, asked_recommendation_before):
         output = json.loads(output)
-
         if type(output["order"]) == str:
             output["order"] = json.loads(output["order"])
+        print("Output order:", output["order"])
+        order = output["order"]
+        insufficient_stock_items = []
+        for item in order:
+            if not isinstance(item, dict) or "item" not in item or "quantity" not in item:
+                continue
+            try:
+                requested_qty = int(item["quantity"])
+            except (ValueError, TypeError):
+                continue
+            product = products_collection.find_one({"name": item["item"]})
+            available_qty = product.get("stock", 0) if product else 0
+            if not product or available_qty < requested_qty:
+                insufficient_stock_items.append({
+                    "name": item["item"],
+                    "requested": requested_qty,
+                    "available": available_qty
+                })
 
-        response = output['response']
-        if not asked_recommendation_before and len(output["order"])>0:
-            recommendation_output = self.recommendation_agent.get_recommendations_from_order(messages,output['order'])
+        if insufficient_stock_items:
+            out_of_stock = [i for i in insufficient_stock_items if i["available"] == 0]
+            low_stock = [i for i in insufficient_stock_items if i["available"] > 0]
+            msg_parts = []
+            if out_of_stock:
+                names = ", ".join(i["name"] for i in out_of_stock)
+                msg_parts.append(f"Sorry, the following items are out of stock: {names}.")
+            if low_stock:
+                for i in low_stock:
+                    msg_parts.append(f"Sorry, only {i['available']} of {i['name']} available in stock.")
+            response = " ".join(msg_parts)
+            order = []
+        else:
+            response = output['response']
+
+        if not asked_recommendation_before and len(order) > 0:
+            recommendation_output = self.recommendation_agent.get_recommendations_from_order(messages, order)
             response = recommendation_output['content']
             asked_recommendation_before = True
 
         dict_output = {
             "role": "assistant",
-            "content": response ,
-            "memory": {"agent":"order_taking_agent",
-                       "step number": output.get("step number",1),
-                       "order": output["order"],
-                       "asked_recommendation_before": asked_recommendation_before
-                      }
+            "content": response,
+            "memory": {
+                "agent": "order_taking_agent",
+                "step number": output.get("step number", 1),
+                "order": order,
+                "asked_recommendation_before": asked_recommendation_before
+            }
         }
-
-        
         return dict_output

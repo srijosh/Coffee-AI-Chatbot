@@ -35,7 +35,7 @@ services:
       - key: ESEWA_SECRET_KEY
         value: ""
       - key: USD_TO_NPR_RATE
-        value: ""
+        value: "137.67"
       - key: HUGGINGFACE_API_KEY
         value: ""
       - key: FRONTEND_URL
@@ -54,3 +54,5 @@ services:
     envVars:
       - key: VITE_BACKEND_URL
         value: "https://coffee-backend-s37s.onrender.com"
+      - key: VITE_USD_TO_NPR_RATE
+        value: "137.67"

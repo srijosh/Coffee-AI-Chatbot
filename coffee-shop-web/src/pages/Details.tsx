@@ -7,7 +7,7 @@ import { useCart } from '../components/CartContext';
 import { Product } from '../types/types';
 import { toast } from 'react-toastify';
 import { useAuth } from '../components/AuthContext';
-
+const USD_TO_NPR_RATE =import.meta.env.VITE_USD_TO_NPR_RATE;
 const Details: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -67,11 +67,15 @@ const Details: React.FC = () => {
         <div className="p-4">
           <h1 className="text-2xl font-semibold text-gray-800">{product.name}</h1>
           <p className="text-gray-500 text-sm">{product.category}</p>
-          <p className="text-gray-900 text-xl font-semibold mt-2">$ {product.price.toFixed(2)}</p>
+          <p className="text-gray-900 text-xl font-semibold mt-2">$ {product.price.toFixed(2)} (Rs.{Math.round(product.price * USD_TO_NPR_RATE)})
+          </p>
           <button
             onClick={handleAddToCart}
             className="mt-4 w-full py-3 text-white rounded-xl font-semibold hover:bg-opacity-90 transition-opacity duration-200 cursor-pointer"
-            style={{ backgroundColor: '#383838' }} onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#202020')} onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#383838')}
+            style={{ backgroundColor: '#383838' }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#202020')}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#383838')}
+            disabled={product.stock === 0}
           >
             Add to Cart
           </button>

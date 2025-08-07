@@ -6,7 +6,7 @@ import { useCart } from '../components/CartContext';
 import { Product, ProductCategory } from '../types/types';
 import { toast } from 'react-toastify';
 import { useAuth } from '../components/AuthContext';
-
+const USD_TO_NPR_RATE =import.meta.env.VITE_USD_TO_NPR_RATE;
 const Home: React.FC = () => {
   const { token, isAuthLoading  } = useAuth();
   const location = useLocation();
@@ -22,7 +22,7 @@ const Home: React.FC = () => {
     }
     }, [token, navigate, location]);
 
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart();
   
   const [products, setProducts] = useState<Product[]>([]);
   const [shownProducts, setShownProducts] = useState<Product[]>([]);
@@ -79,6 +79,19 @@ const Home: React.FC = () => {
   if (error) return <div className="text-center py-10 text-red-500">{error}</div>;
 
   const handleAddToCart = (name: string) => {
+    const product = products.find((p) => p.name === name);
+    if (!product) return;
+    const currentQty = cartItems[name] || 0;
+    if (currentQty >= product.stock) {
+      toast.info(`Maximum stock reached for ${name}`);
+      return;
+    }
+    // If for some reason cart has more than stock, reset to stock
+    if (currentQty > product.stock) {
+      addToCart(name, product.stock - currentQty);
+      toast.info(`Adjusted ${name} quantity to available stock.`);
+      return;
+    }
     addToCart(name, 1);
     toast.success(`${name} added to cart`, {
       position: "top-right",
@@ -148,13 +161,16 @@ const Home: React.FC = () => {
                   <p className="text-gray-500 text-sm text-left w-full">{item.category}</p>
                 </button>
                 <div className="flex justify-between items-center mt-4">
-                  <p className="text-gray-900 text-xl font-semibold">$ {item.price.toFixed(2)}</p>
+                  <p className="text-gray-900 text-xl font-semibold">
+                    $ {item.price.toFixed(2)} (Rs.{Math.round(item.price * USD_TO_NPR_RATE)})
+                  </p>
                   <button
                     onClick={() => handleAddToCart(item.name)}
                     className="px-3 py-1 text-white rounded-sm cursor-pointer duration-200"
                     style={{ backgroundColor: '#383838' }}
                     onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#202020')}
                     onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#383838')}
+                    disabled={item.stock === 0 || (cartItems[item.name] ?? 0) >= item.stock}
                   >
                     <span className="text-xl">+</span>
                   </button>

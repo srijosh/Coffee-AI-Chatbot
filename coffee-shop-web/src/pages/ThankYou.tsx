@@ -10,7 +10,7 @@ const ThankYou: React.FC = () => {
   const location = useLocation();
   const { cartItems, emptyCart } = useCart();
   const searchParams = new URLSearchParams(location.search);
-  const paymentStatus = searchParams.get('status');
+  const paymentStatus = searchParams.get('payment_status');
   const fromPayment = searchParams.get('fromPayment');
   const itemsParam = searchParams.get('items');
   const initialCartItems = itemsParam ? JSON.parse(decodeURIComponent(itemsParam)) : cartItems;

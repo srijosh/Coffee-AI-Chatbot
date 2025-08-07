@@ -8,6 +8,7 @@ export async function createOrder(
   totalPriceUsd: number,
   deliveryMode: 'Deliver' | 'Pick Up',
   address: string | null,
+  delivery_status: string | null,
   token: string
 ): Promise<OrderResponse> {
   try {
@@ -19,6 +20,7 @@ export async function createOrder(
         total_price_usd: totalPriceUsd + (deliveryMode === 'Deliver' ? 1 : 0),
         delivery_mode: deliveryMode,
         address: deliveryMode === 'Deliver' ? address : null,
+        delivery_status: deliveryMode === 'Deliver' ? delivery_status : null,
       },
       { headers: { Authorization: `Bearer ${token}` } }
     );

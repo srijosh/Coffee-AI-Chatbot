@@ -9,9 +9,8 @@ import { Product } from '../types/types';
 import { toast } from 'react-toastify';
 import { useAuth } from '../components/AuthContext';
 import { createOrder, initiatePayment } from '../services/orderService';
-// import { API_URL } from '../config/config';
 
-const USD_TO_NPR_RATE = 132.0; // Must match backend rate
+const USD_TO_NPR_RATE = import.meta.env.VITE_USD_TO_NPR_RATE;
 
 const Order: React.FC = () => {
   const { cartItems, setQuantityCart} = useCart();
@@ -22,7 +21,7 @@ const Order: React.FC = () => {
   const [deliveryMode, setDeliveryMode] = useState<'Deliver' | 'Pick Up'>('Deliver');
   const [address, setAddress] = useState('');
   const [addressError, setAddressError] = useState<string | null>(null);
-
+  const deliveryStatus = 'Pending';
   const { token, user, isAuthLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -86,7 +85,6 @@ const Order: React.FC = () => {
       });
       return;
     }
-
     try {
       // Prepare order items
       const items = Object.keys(cartItems)
@@ -107,6 +105,7 @@ const Order: React.FC = () => {
         totalPrice,
         deliveryMode,
         address,
+        deliveryStatus,
         token || ""
       );
 
@@ -147,7 +146,7 @@ const Order: React.FC = () => {
   if (error) return <div className="text-center py-10 text-red-500">{error}</div>;
 
   const totalWithDelivery = totalPrice + (deliveryMode === 'Deliver' ? 1 : 0);
-  const totalInNPR = (totalWithDelivery * USD_TO_NPR_RATE).toFixed(2);
+  const totalInNPR = Math.round(totalWithDelivery * USD_TO_NPR_RATE);
   const isOrderButtonDisabled = totalPrice === 0 || (deliveryMode === 'Deliver' && address.trim() === '');
 
   return (
