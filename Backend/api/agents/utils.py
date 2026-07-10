@@ -1,5 +1,6 @@
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
+from langchain_huggingface import HuggingFaceEndpointEmbeddings
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -9,12 +10,18 @@ MODEL_NAME = os.getenv("MODEL_NAME")
 
 USE_CLOUD_EMBEDDINGS = os.getenv("USE_CLOUD_EMBEDDINGS", "false").lower() == "true"
 if USE_CLOUD_EMBEDDINGS:
-    from langchain_huggingface import HuggingFaceEndpointEmbeddings
+    
     embedding_model = HuggingFaceEndpointEmbeddings(
         model="sentence-transformers/all-MiniLM-L6-v2",
         task="feature-extraction",
         huggingfacehub_api_token=os.getenv("HUGGINGFACE_API_KEY"),
     )
+    print("=" * 60)
+    print("HF TOKEN:", os.getenv("HUGGINGFACE_API_KEY"))
+    print("Embedding model:", embedding_model.model)
+    print("Repo:", embedding_model.repo_id)
+    print("Task:", embedding_model.task)
+    print("=" * 60)
     print("Using cloud embedding model:", embedding_model.model)
 else:
     embedding_model = HuggingFaceEmbeddings(
