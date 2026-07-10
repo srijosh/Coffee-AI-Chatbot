@@ -2,6 +2,12 @@
 
 Coffee Ghar is an AI-powered customer service and recommendation chatbot built for a coffee shop. It combines an agent-based architecture(powered by **OpenAI/GPT-OSS-120b via Groq**), Retrieval-Augmented Generation (RAG), and Apriori-based product recommendations to enable seamless ordering, information retrieval, and real-time assistance. The backend connects dynamically to a React + TypeScript e-commerce interface, complete with a full administrative suite, automated inventory tracking, and eSewa sandbox payment integration.
 
+Live Demo:
+
+```text
+https://coffee-frontend-7tgb.onrender.com
+```
+
 ## 📋 Table of Contents
 
 - [Introduction](#introduction)
