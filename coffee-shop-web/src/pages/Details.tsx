@@ -11,7 +11,7 @@ const USD_TO_NPR_RATE =import.meta.env.VITE_USD_TO_NPR_RATE;
 const Details: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -49,6 +49,17 @@ const Details: React.FC = () => {
   if (!product) return <div className="text-center py-10 text-gray-600">Product not found</div>;
 
   const handleAddToCart = () => {
+    const currentQty = cartItems[product.name] || 0;
+    if (currentQty >= product.stock) {
+      toast.info(`Maximum stock reached for ${product.name}`);
+      return;
+    }
+    // If for some reason cart has more than stock, reset to stock
+    if (currentQty > product.stock) {
+      addToCart(product.name, product.stock - currentQty);
+      toast.info(`Adjusted ${product.name} quantity to available stock.`);
+      return;
+    }
     addToCart(product.name, 1);
     toast.success(`${product.name} added to cart`, {
       position: "top-right",
@@ -75,7 +86,7 @@ const Details: React.FC = () => {
             style={{ backgroundColor: '#383838' }}
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#202020')}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#383838')}
-            disabled={product.stock === 0}
+            disabled={product.stock === 0 || (cartItems[product.name] ?? 0) >= product.stock}
           >
             Add to Cart
           </button>

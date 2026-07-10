@@ -51,7 +51,6 @@ const ChatRoom: React.FC = () => {
 
     try {
       const responseMessage = await callChatBotAPI([...messages, userMessage]);
-      // const responseMessage = { role: 'assistant', content: 'This is a mock response from the bot. ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss', memory: { order: [] } }; // Mock response for testing
       setMessages((prev) => [...prev, { ...responseMessage, role: 'assistant' }]);
       setIsTyping(false);
 

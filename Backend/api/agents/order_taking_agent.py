@@ -75,7 +75,7 @@ class OrderTakingAgent():
             {
             "chain of thought": Write down your critical thinking about what is the maximum task number the user is on right now. Then write down your critical thinking about the user input and it's relation to the coffee shop process. Then write down your thinking about how you should respond in the response parameter taking into consideration the Things to NOT DO section. and Focus on the things that you should not do. 
             "step number": Determine which task you are on based on the conversation.
-            "order": this is going to be a list of jsons like so. [{"item":put the item name, "quanitity": put the number that the user wants from this item, "price":put the total price of the item }]
+            "order": this is going to be a list of jsons like so. [{"item":put the item name, "quantity": put the number that the user wants from this item, "price":put the total price of the item }]
             "response": write the response to the user
             }
         """

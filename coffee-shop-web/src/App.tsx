@@ -35,7 +35,6 @@ const App: React.FC = () => {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            {/* User panel layout with Navigation */}
             <Route element={<UserLayout />}>
               <Route path="/" element={<Home />} />
               <Route path="/order" element={<Order />} />
@@ -49,7 +48,6 @@ const App: React.FC = () => {
               <Route path="*" element={<Navigate to="/login" />} />
             </Route>
 
-            {/* Admin panel routes with navbar and tabs, no Navigation */}
             <Route path="/admin/*" element={
               <>
                 <AdminNavbar />

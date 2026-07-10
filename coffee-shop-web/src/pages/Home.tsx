@@ -18,7 +18,7 @@ const Home: React.FC = () => {
         navigate('/login', { state: { from: location.pathname } });
       }
       if (isAuthLoading) {
-      return; // Wait for auth state to be ready
+      return;
     }
     }, [token, navigate, location]);
 

@@ -183,7 +183,7 @@ def verify_esignature(parsed_response: dict, secret_key: str) -> bool:
     
     return expected_signature == parsed_response.get("signature")
 
-# API Endpoints (Existing)
+# API Endpoints 
 @app.post("/chat")
 def chat_endpoint(request: ChatRequest):
     try:
@@ -191,7 +191,7 @@ def chat_endpoint(request: ChatRequest):
         return {"output": response}
     except Exception as e:
         import traceback
-        print(traceback.format_exc())  # Add this line
+        print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/products")
@@ -588,7 +588,7 @@ async def payment_success(data: str):
             # Encode cart items for URL
         encoded_items = urllib.parse.quote(json.dumps(cart_items))
         # Redirect to the ThankYou page with a flag
-        return RedirectResponse(url=f"{FRONTEND_URL}/thankyou?status=success&fromPayment=true&items={encoded_items}")  # Updated port and added flag
+        return RedirectResponse(url=f"{FRONTEND_URL}/thankyou?payment_status=success&fromPayment=true&items={encoded_items}")  # Updated port and added flag
     except base64.binascii.Error as e:
         logger.error(f"Base64 decoding error: {str(e)}")
         raise HTTPException(status_code=400, detail="Invalid Base64 data from eSewa")

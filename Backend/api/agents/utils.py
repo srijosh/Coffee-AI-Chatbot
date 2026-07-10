@@ -17,17 +17,11 @@ if USE_CLOUD_EMBEDDINGS:
     )
     print("Using cloud embedding model:", embedding_model.model)
 else:
-    from langchain_community.embeddings import HuggingFaceEmbeddings
     embedding_model = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2",
         cache_folder="./model_cache"
     )
 
-# Initialize Groq Embeddings model locally
-# embedding_model = HuggingFaceEmbeddings(
-#     model_name="sentence-transformers/all-MiniLM-L6-v2",
-#     cache_folder="./model_cache"
-# )
 
 # Initialize Chat Model
 chat_model = ChatGroq(
