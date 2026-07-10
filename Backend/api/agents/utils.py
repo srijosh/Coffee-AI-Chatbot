@@ -1,7 +1,8 @@
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
-from langchain_huggingface import HuggingFaceEndpointEmbeddings
+from huggingface_hub import InferenceClient
 import os
+import numpy as np
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -11,23 +12,32 @@ MODEL_NAME = os.getenv("MODEL_NAME")
 USE_CLOUD_EMBEDDINGS = os.getenv("USE_CLOUD_EMBEDDINGS", "false").lower() == "true"
 if USE_CLOUD_EMBEDDINGS:
     
-    embedding_model = HuggingFaceEndpointEmbeddings(
+    client = InferenceClient(
         model="sentence-transformers/all-MiniLM-L6-v2",
-        task="feature-extraction",
-        huggingfacehub_api_token=os.getenv("HUGGINGFACE_API_KEY"),
+        token=os.getenv("HUGGINGFACE_API_KEY"),
     )
-    print("=" * 60)
-    print("HF TOKEN:", os.getenv("HUGGINGFACE_API_KEY"))
-    print("Embedding model:", embedding_model.model)
-    print("Repo:", embedding_model.repo_id)
-    print("Task:", embedding_model.task)
-    print("=" * 60)
-    print("Using cloud embedding model:", embedding_model.model)
+
+    def get_embedding(text_input):
+
+        result = client.feature_extraction(text_input)
+
+        embedding = np.array(result)
+
+        # mean pooling if token embeddings returned
+        if embedding.ndim == 3:
+            embedding = embedding.mean(axis=1)[0]
+
+        elif embedding.ndim == 2:
+            embedding = embedding.mean(axis=0)
+
+        return embedding.tolist()
 else:
     embedding_model = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2",
         cache_folder="./model_cache"
     )
+    def get_embedding(text_input):
+        return embedding_model.embed_documents([text_input])[0]
 
 
 # Initialize Chat Model
@@ -36,9 +46,7 @@ chat_model = ChatGroq(
     api_key=API_KEY
 )
 
-def get_embedding(text_input):
-    """Fetch embeddings using LangChain's Groq integration."""
-    return embedding_model.embed_documents([text_input])[0]
+
 
 def get_chatbot_response(user_prompt):
     """Get response from Groq chatbot using direct invocation."""
